@@ -17,6 +17,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Import API Routes
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
+
 // Test Route - Just to see everything is working
 app.get('/', (req, res) => {
     res.send('Welcome to Elizabeth and Shir\'s Bakery Server!');

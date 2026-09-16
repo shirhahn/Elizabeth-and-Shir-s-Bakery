@@ -1,35 +1,57 @@
-// start
+// server.js
 const express = require('express');
-
 const path = require('path');
-
 const app = express();
-
 const PORT = 3000;
 
-// Middleware for parsing JSON requests (Required for Request Body)
+// --- Middleware ---
 app.use(express.json()); 
-
-// Middleware for serving static files (CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// View Engine Setup (EJS for SSR)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Import API Routes
+// --- API Routes & Game Validation ---
 const apiRoutes = require('./routes/api');
 const gameValidator = require('./routes/game');
-
-// Apply the game validator middleware TO ALL API routes
 app.use('/api', gameValidator, apiRoutes);
 
-// Test Route - Just to see everything is working
+// --- Frontend Routes (SSR) ---
+const gameSteps = require('./data/gameSteps');
+
+// Main Game Route
 app.get('/', (req, res) => {
-    res.send('Welcome to Elizabeth and Shir\'s Bakery Server!');
+    const clientSteps = gameSteps.map(step => ({
+        id: step.id,
+        title: step.title,
+        description: step.description
+    }));
+    res.render('index', { steps: clientSteps, totalStages: clientSteps.length });
 });
 
-// Start the server
+// Schemas Route
+app.get('/schemas', (req, res) => {
+    const resourceSchemas = {
+        Pastries: {
+            id: "Number",
+            name: "String",
+            category: "String",
+            price: "Number",
+            isGlutenFree: "Boolean",
+            stock: "Number"
+        },
+        Orders: {
+            id: "Number",
+            customerName: "String",
+            pastryId: "Number (Reference to Pastries)",
+            quantity: "Number",
+            status: "String ('pending', 'completed', 'cancelled')"
+        }
+    };
+    res.render('schemas', { schemas: resourceSchemas });
+});
+
+// --- Start Server ---
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

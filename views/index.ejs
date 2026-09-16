@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elizabeth & Shir's Bakery - API Game</title>
+    <!-- Link to external CSS file as required by the assignment -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🥐 Elizabeth & Shir's Bakery API</h1>
+        <a href="/schemas" target="_blank" class="schemas-link">View Database Schemas</a>
+    </header>
+
+    <main class="game-container">
+        <!-- Section 1: Current Stage Instructions -->
+        <section class="instructions-panel">
+            <div class="level-indicator">
+                Level <span id="current-stage">1</span> of <%= totalStages %>
+            </div>
+            <h2 id="stage-title">Loading...</h2>
+            <p id="stage-description">Preparing the kitchen...</p>
+        </section>
+
+        <!-- Section 2: Request Builder -->
+        <section class="request-panel">
+            <h3>Build Your Request</h3>
+            <div class="input-group row">
+                <!-- Dropdown for HTTP Method selection -->
+                <select id="http-method">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <!-- Input for API path and query parameters -->
+                <input type="text" id="api-path" placeholder="/api/pastries" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label for="request-body">JSON Body (Optional):</label>
+                <!-- Textarea for JSON Request Body -->
+                <textarea id="request-body" rows="6" placeholder='{ "key": "value" }'></textarea>
+            </div>
+
+            <!-- Send Request Button -->
+            <button id="send-btn" class="primary-btn">Send Request 🚀</button>
+        </section>
+
+        <!-- Section 3: Server Response -->
+        <section class="response-panel">
+            <h3>Server Response</h3>
+            <div class="status-bar">
+                Status Code: <span id="status-code">-</span>
+            </div>
+            <!-- Display area for returned JSON data -->
+            <pre id="response-body" class="json-display">Awaiting request...</pre>
+            
+            <!-- Feedback and Progression Area -->
+            <div id="game-feedback" class="feedback-message hidden"></div>
+            <button id="next-btn" class="success-btn hidden">Next Level ➡️</button>
+        </section>
+    </main>
+
+    <!-- Injecting stage data (without solutions) from EJS variables to client-side JS -->
+    <script>
+        const gameStepsData = <%- JSON.stringify(steps) %>;
+    </script>
+    
+    <!-- Link to client-side logic -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

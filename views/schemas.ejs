@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schemas - Elizabeth & Shir's Bakery</title>
+    <!-- We can use the same CSS file for a consistent look -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="schemas-page">
+    <header>
+        <h1>Database Schemas</h1>
+        <a href="/" class="schemas-link">Back to Game</a>
+    </header>
+
+    <main class="schemas-container">
+        <!-- Loop through each resource in the schemas object passed from the server -->
+        <% for (const [resourceName, fields] of Object.entries(schemas)) { %>
+            <section class="schema-card">
+                <h2><%= resourceName %></h2>
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Field Name</th>
+                            <th>Data Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Loop through the fields of the current resource -->
+                        <% for (const [fieldName, dataType] of Object.entries(fields)) { %>
+                            <tr>
+                                <td><code><%= fieldName %></code></td>
+                                <td><%= dataType %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+        <% } %>
+    </main>
+</body>
+</html>

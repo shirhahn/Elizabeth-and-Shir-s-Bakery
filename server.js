@@ -19,7 +19,10 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Import API Routes
 const apiRoutes = require('./routes/api');
-app.use('/api', apiRoutes);
+const gameValidator = require('./routes/game');
+
+// Apply the game validator middleware TO ALL API routes
+app.use('/api', gameValidator, apiRoutes);
 
 // Test Route - Just to see everything is working
 app.get('/', (req, res) => {

@@ -1,56 +1,57 @@
 # 🥐 Elizabeth & Shir's Bakery - API Game
 
-Welcome to **Elizabeth & Shir's Bakery**! 🥖🧁 
-It’s a busy Friday morning, the smell of fresh croissants is in the air, and our bakery is packed with customers. But we have a problem: our digital order system is completely manual today! 
+An interactive web-based educational application designed to practice RESTful API concepts and HTTP client-server communication. 
 
-We need your help to manage the bakery's inventory, take customer orders, and even handle a few kitchen disasters along the way. In this interactive game, you will act as our head cashier and API architect. By constructing the right RESTful HTTP requests, you'll advance through the levels and save the shift. Can you pass all 10 stages and become the Ultimate API Master? 🏆
+## Overview
 
----
+This project serves as an API learning environment where users construct HTTP requests (GET, POST, PUT, PATCH, DELETE) to interact with a mock bakery management system. The application enforces server-side validation for every request and provides real-time JSON responses and stage-specific feedback.
 
-## 🎓 About This Project
-
-This project was built as **Assignment 3** for the Web Application Development course. 
-The main goal of this game is to practice and demonstrate a deep understanding of Client-Server communication using RESTful API principles.
-
-### Key Features:
-* **Interactive UI:** Built entirely with Vanilla JavaScript and AJAX (Fetch API) for a seamless, single-page experience without reloads.
-* **Server-Side Validation:** The frontend only sends requests. All game logic, solution validation, and error handling are securely processed on the Node.js server.
-* **Dynamic SSR:** Server-Side Rendering using EJS to generate the game interface and the database schemas dynamically.
-* **RESTful Architecture:** Proper utilization of HTTP Methods (GET, POST, PUT, PATCH, DELETE), Status Codes, Route Parameters, and Query Parameters.
-
----
-
-## 🚀 Getting Started
+## Prerequisites
 
 Follow these instructions to get a copy of the project up and running on your local machine.
 
-### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
+Ensure you have the following installed on your local machine:
+* [Node.js](https://nodejs.org/) (LTS version recommended)
+* Git
 
-### Installation
-1. Clone the repository to your local machine:
-   git clone https://github.com/shirhahn/Elizabeth-and-Shir-s-Bakery.git
-2. Open your terminal and navigate to the project directory:
-   cd Elizabeth-and-Shir-s-Bakery
-3. Install the required server dependencies (Express & EJS):
-   npm install
+## Installation
 
-### Running the Server
-To start the application, simply run:
+1. Clone the repository to your local environment:
+```bash
+git clone https://github.com/shirhahn/Elizabeth-and-Shir-s-Bakery.git
+cd Elizabeth-and-Shir-s-Bakery
+```
+
+Install the required Node.js dependencies (Express and EJS):
+
+```Bash
+npm install
+```
+Running the Application
+Start the Express server:
+
+```Bash
 node server.js
+```
 
-You should see a message in the terminal saying: Server is running on http://localhost:3000
+Once the terminal displays Server is running on http://localhost:3000, open your web browser and navigate to: `http://localhost:3000`
 
-### Playing the Game
-1. Open your favorite web browser.
-2. Navigate to: http://localhost:3000
-3. Follow the on-screen instructions for each level. Construct your HTTP requests by selecting the right method, URL path, and JSON body.
-4. **Need a hint?** To view the database schemas and understand the data structure at any time, click the "View Database Schemas" link in the header or navigate directly to: http://localhost:3000/schemas
+## Usage & Features
 
----
+Interactive Request Builder: Use the left panel to select an HTTP method, define the API path (with auto-complete support), and inject a JSON body template based on the current context.
 
-## 🛠️ Technologies Used
+Stage Navigation: Progress sequentially or use the dropdown menu to jump directly to specific stages.
+
+Hint System: Click the hint button to receive stage-specific documentation and payload requirements.
+
+Database Schemas: View the strict data structure required for API interactions by navigating to the Schema Reference page:
+
+`http://localhost:3000/schemas`
+
+
+## Technologies Used
 * **Backend:** Node.js, Express.js
 * **Frontend:** Vanilla JavaScript, HTML5, CSS3 (Flexbox for Responsive Design)
 * **View Engine:** EJS (Embedded JavaScript templating)
 * **Architecture:** RESTful API, AJAX
+---

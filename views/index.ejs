@@ -9,59 +9,82 @@
 </head>
 <body>
     <header>
-        <h1>🥐 Elizabeth & Shir's Bakery API</h1>
+        <h1>Elizabeth & Shir's Bakery API</h1>
         <a href="/schemas" target="_blank" class="schemas-link">View Database Schemas</a>
     </header>
 
     <main class="game-container">
-        <!-- Section 1: Current Stage Instructions -->
-        <section class="instructions-panel">
-            <div class="level-indicator">
-                Level <span id="current-stage">1</span> of <%= totalStages %>
-            </div>
-            <h2 id="stage-title">Loading...</h2>
-            <p id="stage-description">Preparing the kitchen...</p>
-        </section>
-
-        <!-- Section 2: Request Builder -->
-        <section class="request-panel">
-            <h3>Build Your Request</h3>
-            <div class="input-group row">
-                <!-- Dropdown for HTTP Method selection -->
-                <select id="http-method">
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="PATCH">PATCH</option>
-                    <option value="DELETE">DELETE</option>
-                </select>
-                <!-- Input for API path and query parameters -->
-                <input type="text" id="api-path" placeholder="/api/pastries" autocomplete="off">
-            </div>
+        <div class="interactive-area">
             
-            <div class="input-group">
-                <label for="request-body">JSON Body (Optional):</label>
-                <!-- Textarea for JSON Request Body -->
-                <textarea id="request-body" rows="6" placeholder='{ "key": "value" }'></textarea>
+           <!-- Left Column: Instructions + Request Builder -->
+            <div class="left-column">
+                <section class="instructions-panel">
+                    <div class="level-indicator" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Level <span id="current-stage">1</span> of <%= totalStages %></span>
+                        
+                        <!-- Level Navigation Dropdown -->
+                        <select id="stage-selector" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9rem; cursor: pointer; background-color: white;">
+                            <% steps.forEach((step, index) => { %>
+                                <option value="<%= index %>">Stage <%= index + 1 %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <h2 id="stage-title">Loading...</h2>
+                    <p id="stage-description">Preparing the kitchen...</p>
+                    
+                    <!-- Hint System -->
+                    <button id="hint-btn" style="margin-top: 15px; padding: 6px 12px; background: #e9ecef; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">💡 Need a hint?</button>
+                    <p id="hint-display" class="hidden" style="margin-top: 10px; font-style: italic; color: #606c38; font-weight: bold;"></p>
+                </section>
+
+                <section class="request-panel">
+                    <h3>Build Your Request</h3>
+                    <div class="input-group row">
+                        <select id="http-method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                        
+                        <!-- Added list attribute and datalist for Auto-Complete -->
+                        <input type="text" id="api-path" placeholder="/api/pastries" autocomplete="off" list="api-paths-list">
+                        <datalist id="api-paths-list">
+                            <option value="/api/pastries">
+                            <option value="/api/pastries/1">
+                            <option value="/api/orders">
+                            <option value="/api/orders/1">
+                        </datalist>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label for="request-body" style="margin: 0;">JSON Body (Optional):</label>
+                            <!-- Load Template Button -->
+                            <button id="load-template-btn" style="padding: 4px 8px; font-size: 0.8rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">📋 Load Template</button>
+                        </div>
+                        <textarea id="request-body" rows="6" placeholder='{ "key": "value" }'></textarea>
+                    </div>
+
+                    <button id="send-btn" class="primary-btn">Send Request 🚀</button>
+                </section>
             </div>
 
-            <!-- Send Request Button -->
-            <button id="send-btn" class="primary-btn">Send Request 🚀</button>
-        </section>
+            <section class="response-panel">
+                <h3>Server Response</h3>
+                <div class="status-bar">
+                    Status Code: <span id="status-code">-</span>
+                </div>
+                <!-- תצוגת הנתונים שחזרו -->
+                <pre id="response-body" class="json-display">Awaiting request...</pre>
+                
+                <div id="game-feedback" class="feedback-message hidden"></div>
+                <button id="next-btn" class="success-btn hidden">Next Level ➡️</button>
+            </section>
 
-        <!-- Section 3: Server Response -->
-        <section class="response-panel">
-            <h3>Server Response</h3>
-            <div class="status-bar">
-                Status Code: <span id="status-code">-</span>
-            </div>
-            <!-- Display area for returned JSON data -->
-            <pre id="response-body" class="json-display">Awaiting request...</pre>
-            
-            <!-- Feedback and Progression Area -->
-            <div id="game-feedback" class="feedback-message hidden"></div>
-            <button id="next-btn" class="success-btn hidden">Next Level ➡️</button>
-        </section>
+        </div>
     </main>
 
     <!-- Injecting stage data (without solutions) from EJS variables to client-side JS -->

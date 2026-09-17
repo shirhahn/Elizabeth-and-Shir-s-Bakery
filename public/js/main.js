@@ -3,10 +3,25 @@
 // --- State Management ---
 let currentStageIndex = 0;
 
+// --- Stage Hints Mapping ---
+const stageHints = {
+    1: "Send a GET request to '/api/pastries' to view all items currently in stock.",
+    2: "Fetch a specific pastry by appending its ID to the URL (e.g., '/api/pastries/1').",
+    3: "Use POST to '/api/pastries'. Click 'Load Template' to quickly populate pastry fields.",
+    4: "Filter pastries using query parameters on '/api/pastries' (e.g., '/api/pastries?isGlutenFree=true').",
+    5: "Create a new order with a POST request to '/api/orders'. Use 'Load Template' for order fields.",
+    6: "Use PATCH to '/api/pastries/2'. Only send the field being changed: { \"stock\": 0 }.",
+    7: "PUT updates the full resource. Send the complete order JSON to '/api/orders/:id'.",
+    8: "Remove an item from the system by sending a DELETE request to its path (e.g., '/api/orders/1').",
+    9: "Query orders using status or customer parameters (e.g., '/api/orders?status=pending').",
+    10: "Test error handling! Request an ID that does not exist (e.g., '/api/pastries/999') and expect a 404 status."
+};
+
 // --- DOM Elements ---
 const stageTitle = document.getElementById('stage-title');
 const stageDescription = document.getElementById('stage-description');
 const currentStageSpan = document.getElementById('current-stage');
+const stageSelector = document.getElementById('stage-selector');
 
 const httpMethodSelect = document.getElementById('http-method');
 const apiPathInput = document.getElementById('api-path');
@@ -18,27 +33,38 @@ const responseBodyDisplay = document.getElementById('response-body');
 const gameFeedback = document.getElementById('game-feedback');
 const nextBtn = document.getElementById('next-btn');
 
+const hintBtn = document.getElementById('hint-btn');
+const hintDisplay = document.getElementById('hint-display');
+const loadTemplateBtn = document.getElementById('load-template-btn');
+
 // --- Initialization ---
 function loadStage() {
-    // gameStepsData is injected from the server via EJS
     const stage = gameStepsData[currentStageIndex];
     
-    // Update UI with stage instructions
     currentStageSpan.textContent = currentStageIndex + 1;
     stageTitle.textContent = stage.title;
     stageDescription.textContent = stage.description;
     
-    // Reset inputs and displays for the new level
+    // Sync the selector dropdown
+    if (stageSelector) {
+        stageSelector.value = currentStageIndex;
+    }
+    
+    // Reset form controls
     httpMethodSelect.value = 'GET';
     apiPathInput.value = '';
     requestBodyInput.value = '';
     statusCodeDisplay.textContent = '-';
     responseBodyDisplay.textContent = 'Awaiting request...';
     
-    // Hide feedback and next button
+    // Reset messages and action buttons
     gameFeedback.className = 'feedback-message hidden';
     gameFeedback.textContent = '';
     nextBtn.classList.add('hidden');
+    
+    // Reset hint
+    hintDisplay.classList.add('hidden');
+    hintDisplay.textContent = '';
 }
 
 // --- Main Game Logic (AJAX) ---
@@ -48,25 +74,22 @@ async function sendRequest() {
     const bodyText = requestBodyInput.value.trim();
     const stage = gameStepsData[currentStageIndex];
 
-    // Basic frontend validation
     if (!path) {
         showFeedback("Please enter an API path.", "error");
         return;
     }
 
-    // Prepare fetch options (AJAX)
     const options = {
         method: method,
         headers: {
-            'x-game-stage': stage.id.toString(), // Sending the stage ID to the server
+            'x-game-stage': stage.id.toString(), 
             'Content-Type': 'application/json'
         }
     };
 
-    // Parse body if it's a request that typically has one
     if (method !== 'GET' && method !== 'DELETE' && bodyText) {
         try {
-            options.body = JSON.stringify(JSON.parse(bodyText)); // Validate it's proper JSON
+            options.body = JSON.stringify(JSON.parse(bodyText)); 
         } catch (e) {
             showFeedback("Invalid JSON format in Request Body.", "error");
             return;
@@ -74,40 +97,27 @@ async function sendRequest() {
     }
 
     try {
-        // Send the actual AJAX request to our Express server
         const response = await fetch(path, options);
-        
-        // Parse the response from the server
         const responseData = await response.json().catch(() => ({}));
         
-        // Update UI with the server's response
         statusCodeDisplay.textContent = response.status;
         responseBodyDisplay.textContent = JSON.stringify(responseData, null, 2);
 
-        // --- Check Game Validation ---
-        // We look for the custom header we set in the server's middleware
         const gameResult = response.headers.get('X-Game-Result');
         
         if (gameResult === 'Success') {
             showFeedback("Great job! Request successful.", "success");
             
-            // Handle game completion
             if (currentStageIndex === gameStepsData.length - 1) {
                 nextBtn.textContent = "Finish Game 🎉";
             }
             nextBtn.classList.remove('hidden');
         } else if (responseData.gameError) {
-            // The server caught a mistake in the game logic
             showFeedback(responseData.gameError, "error");
         } else {
-            // A standard server error occurred (e.g., standard 404)
-            // Note: Stage 10 specifically requires handling a 404 correctly, 
-            // the server will mark it as 'Success' if expected.
             showFeedback("Request processed, but not what the stage expected.", "error");
         }
-
     } catch (error) {
-        // Handle network errors (e.g., server is down)
         statusCodeDisplay.textContent = "Error";
         responseBodyDisplay.textContent = "Could not connect to the server.";
         showFeedback("Network error. Make sure the path is correct.", "error");
@@ -129,9 +139,63 @@ nextBtn.addEventListener('click', () => {
         loadStage();
     } else {
         alert("Congratulations! You completed all the stages and became an API Master! 🏆");
-        currentStageIndex = 0; // Restart game
+        currentStageIndex = 0; 
         loadStage();
     }
+});
+
+stageSelector.addEventListener('change', (e) => {
+    currentStageIndex = parseInt(e.target.value, 10);
+    loadStage();
+});
+
+// Display customized hint for the current stage
+hintBtn.addEventListener('click', () => {
+    const stage = gameStepsData[currentStageIndex];
+    const stageId = stage ? stage.id : (currentStageIndex + 1);
+    
+    hintDisplay.textContent = stageHints[stageId] || "Check your path, method, and headers against the database schemas.";
+    hintDisplay.classList.remove('hidden');
+});
+
+// Load context-aware JSON template based on stage and resource type
+loadTemplateBtn.addEventListener('click', () => {
+    const stage = gameStepsData[currentStageIndex];
+    const stageId = stage ? stage.id : (currentStageIndex + 1);
+    const path = apiPathInput.value.trim().toLowerCase();
+    const method = httpMethodSelect.value;
+
+    if (method === 'GET' || method === 'DELETE') {
+        requestBodyInput.value = "";
+        showFeedback("Body is not typically required for GET or DELETE requests.", "error");
+        return;
+    }
+
+    // Specific template for Stage 6 partial update (PATCH)
+    if (stageId === 6) {
+        requestBodyInput.value = JSON.stringify({ stock: 0 }, null, 2);
+        return;
+    }
+
+    // Order template for orders stages (5, 7) or if the path indicates orders
+    if (stageId === 5 || stageId === 7 || path.includes('orders')) {
+        requestBodyInput.value = JSON.stringify({
+            customerName: "Alice Smith",
+            pastryId: 1,
+            quantity: 2,
+            status: "pending"
+        }, null, 2);
+        return;
+    }
+
+    // Default pastry template for pastries stages
+    requestBodyInput.value = JSON.stringify({
+        name: "Blueberry Muffin",
+        category: "Muffin",
+        price: 14,
+        isGlutenFree: false,
+        stock: 15
+    }, null, 2);
 });
 
 // --- Boot up ---

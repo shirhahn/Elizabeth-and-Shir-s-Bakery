@@ -51,6 +51,17 @@ app.get('/schemas', (req, res) => {
     res.render('schemas', { schemas: resourceSchemas });
 });
 
+app.use('/api', (req, res) => {
+    res.status(404).json({ error: "API route not found" });
+});
+
+app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    res.status(status).json({
+        error: status === 400 ? "Invalid JSON in request body" : "Internal server error"
+    });
+});
+
 // --- Start Server ---
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

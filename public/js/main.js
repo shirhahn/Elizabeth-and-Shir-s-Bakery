@@ -3,19 +3,6 @@
 // --- State Management ---
 let currentStageIndex = 0;
 
-// --- Stage Hints Mapping ---
-const stageHints = {
-    1: "Send a GET request to '/api/pastries' to view all items currently in stock.",
-    2: "Fetch a specific pastry by appending its ID to the URL (e.g., '/api/pastries/1').",
-    3: "Use POST to '/api/pastries'. Click 'Load Template' to quickly populate pastry fields.",
-    4: "Filter pastries using query parameters on '/api/pastries' (e.g., '/api/pastries?isGlutenFree=true').",
-    5: "Create a new order with a POST request to '/api/orders'. Use 'Load Template' for order fields.",
-    6: "Use PATCH to '/api/pastries/2'. Only send the field being changed: { \"stock\": 0 }.",
-    7: "PUT updates the full resource. Send the complete order JSON to '/api/orders/:id'.",
-    8: "Remove an item from the system by sending a DELETE request to its path (e.g., '/api/orders/1').",
-    9: "Query orders using status or customer parameters (e.g., '/api/orders?status=pending').",
-    10: "Test error handling! Request an ID that does not exist (e.g., '/api/pastries/999') and expect a 404 status."
-};
 
 // --- DOM Elements ---
 const stageTitle = document.getElementById('stage-title');
@@ -150,11 +137,15 @@ stageSelector.addEventListener('change', (e) => {
 });
 
 // Display customized hint for the current stage
-hintBtn.addEventListener('click', () => {
+hintBtn.addEventListener('click', async () => {
     const stage = gameStepsData[currentStageIndex];
-    const stageId = stage ? stage.id : (currentStageIndex + 1);
-    
-    hintDisplay.textContent = stageHints[stageId] || "Check your path, method, and headers against the database schemas.";
+    try {
+        const res = await fetch(`/api/game/stages/${stage.id}/hint`);
+        const data = await res.json();
+        hintDisplay.textContent = data.hint || "No hint available.";
+    } catch {
+        hintDisplay.textContent = "Could not load hint.";
+    }
     hintDisplay.classList.remove('hidden');
 });
 
@@ -178,7 +169,7 @@ loadTemplateBtn.addEventListener('click', () => {
     }
 
     // Order template for orders stages (5, 7) or if the path indicates orders
-    if (stageId === 5 || stageId === 7 || path.includes('orders')) {
+    if (stageId === 5 || stageId === 8 || path.includes('orders')) {
         requestBodyInput.value = JSON.stringify({
             customerName: "Alice Smith",
             pastryId: 1,

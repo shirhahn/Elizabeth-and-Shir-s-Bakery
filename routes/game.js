@@ -16,13 +16,17 @@ function gameValidator(req, res, next) {
 
     const expected = step.expected;
     
-    if (req.method !== expected.method) {
-        return res.status(400).json({ gameError: `Wrong HTTP Method. Expected \({expected.method}, but got\){req.method}.` });
+    if (req.method !== expected.method) {     
+        return res.status(400).json({ 
+            gameError: "Wrong HTTP Method. Expected " + expected.method + ", but got " + req.method + "." 
+        });
     }
 
     const requestPath = req.originalUrl.split('?')[0]; 
     if (requestPath !== expected.path) {
-        return res.status(400).json({ gameError: `Wrong Path. Expected \({expected.path}, but got\){requestPath}.` });
+        return res.status(400).json({ 
+            gameError: "Wrong Path. Expected " + expected.path + ", but got " + requestPath + "." 
+        });
     }
 
     if (expected.queryParams) {
